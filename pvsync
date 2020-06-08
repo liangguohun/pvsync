@@ -1,0 +1,76 @@
+#!/bin/bash
+
+set -e
+
+PV_CMD=$1
+
+initConf(){
+cat > /etc/pvsync/pvctl.conf<<_END_
+NFS_SRC=$1
+FS_BAC=$2
+_END_
+}
+
+mngClaim(){
+while [ $# -gt 1 ];
+do
+case $1 in
+-num) PV_NUM=$2
+shift
+;;
+
+-f) PV_CLAIM=$2
+shift
+;;
+esac
+shift
+done
+}
+
+getConfig(){
+NFS_SRC=`sed '/^NFS_SRC=/!d;s/.*=//' /etc/pvsync/pvctl.conf` 
+FS_BAC=`sed '/^FS_BAC=/!d;s/.*=//' /etc/pvsync/pvctl.conf` 
+}
+
+transFiles(){
+if [ ! -n "$PV_NUM" ]; then
+PV_NUM=10
+fi
+PV_NUM=$(expr $PV_NUM + 1)
+tar_dirs=$(ls $NFS_SRC -lt | head -n $PV_NUM | tail -n $(expr $PV_NUM - 1) | awk '{print $9}')
+for i in $tar_dirs
+do
+  if [ $(expr ${#i} - 37)>0 ]; then
+  cpfilesAndDel ${i:0:$(expr ${#i} - 37)} $i
+  fi
+done
+}
+
+cpfilesAndDel(){
+old_files=$(ls -al $FS_BAC | grep $1* | awk '{print $9}')
+for i in $old_files
+do
+if [ ${#2} == ${#i} ]; then
+mv $FS_BAC/$i/* $NFS_SRC/$2/
+deleteEmptyFold $FS_BAC/$i/
+fi
+done
+}
+
+deleteEmptyFold(){
+old=$1
+if [ "`ls -A ${old}`" = "" ]; then
+	rm -rf $old
+else
+	echo $1 "is not empty"
+fi
+}
+
+if [ $PV_CMD == "init" ]; then
+ initConf $2 $3
+else 
+ mngClaim $*   # $@
+ kubectl $PV_CMD -f $PV_CLAIM
+ getConfig
+ transFiles
+fi
