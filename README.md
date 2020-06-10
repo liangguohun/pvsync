@@ -1,6 +1,10 @@
 
 # k8s move backup and restore data
 
+## suggest install like so
+rpm -ivh pvsync-1.0.0-1.el7.centos.x86_64.rpm
+so you can use "pvsync"  command direct:
+
 ## backup data
 mv data_center/default-* /data_center_bak/
 
@@ -11,7 +15,6 @@ mv data_center/default-* /data_center_bak/
 
 ## command tool [-num 20 ]to sync file number can choose,use to replace kubectl on data mve and create new pv
 pvsync [create/apply] -num 20 -f file.yaml
-
 
 # make rpm package step
 ## install tool
@@ -41,15 +44,18 @@ Version: 1.0.0
 Release: 1%{?dist}
 Source0: pvsync-1.0.0.tar.gz
 License: GPL
-Group: Application
+Group: liangguohun 
 URL: https://github.com/liangguohun/pvsync
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+Packager: liangguohun
+
+%define userpath /usr/sbin/
 
 %description
 This is a software to help move nfs file to new pv in k8s
 
 %prep
-%setup -q
+%setup -c
 
 %post
 echo Install Success
@@ -57,23 +63,21 @@ echo Install Success
 %build
 
 %install
-rm -rf %{buildroot}
+install -d $RPM_BUILD_ROOT%{userpath}
+cp -a %{name}* $RPM_BUILD_ROOT%{userpath}
 
 %clean
-rm -rf %{buildroot}
+#rm -rf $RPM_BUILD_ROOT
+#rm -rf $RPM_BUILD_DIR/%{name}-%{version}
 
 %files
 %defattr(-,root,root,-)
-/etc/pvsync/*
-/usr/local/pvsync/*
-```
+%{userpath}/pvsync
 
-```
-> rpmbuild pvsync.spec
-> cp pvsync.spec rpmbuild/SPECS
-> cp pvsync-1.0.0.tar.gz rpmbuild/SOURCES/
-> cd rpmbuild/SPECS/
-> rpmbuild -ba pvsync.spec
+%preun
+rm -rf %{_sbindir}/pvsync
+rm -rf /etc/pvsync/pvctl.conf
+
 ```
 
 > cd ../ #  rpm package in fold RPMS and source in SRPMS
@@ -83,4 +87,4 @@ rm -rf %{buildroot}
 
 ## install rpm
 
-> rpm -ivh 
+> rpm -ivh pvsync-1.0.0-1.el7.centos.x86_64.rpm
