@@ -5,6 +5,9 @@ set -e
 PV_CMD=$1
 
 initConf(){
+if [ ! -d "/etc/pvsync" ]; then
+mkdir /etc/pvsync
+fi
 cat > /etc/pvsync/pvctl.conf<<_END_
 NFS_SRC=$1
 FS_BAC=$2
