@@ -18,15 +18,20 @@ pvsync [create/apply] -num 20 -f file.yaml
 > yum  install  -y  rpm-build
 ## need normal user
 > useradd  hunge
+
 > tar -zcvf pvsync-1.0.0.tar.gz .
+
 > cp pvsync-1.0.0.tar.gz ~hunge/
+
 > su - hunge
 
 ## gernate spce file
 touch pvsync.spec
 
 donot need
+
 BuildRequires: 
+
 Requires: 
 
 ```
@@ -63,11 +68,13 @@ rm -rf %{buildroot}
 /usr/local/pvsync/*
 ```
 
+```
 > rpmbuild pvsync.spec
 > cp pvsync.spec rpmbuild/SPECS
 > cp pvsync-1.0.0.tar.gz rpmbuild/SOURCES/
 > cd rpmbuild/SPECS/
 > rpmbuild -ba pvsync.spec
+```
 
 > cd ../ #  rpm package in fold RPMS and source in SRPMS
 
@@ -75,4 +82,5 @@ rm -rf %{buildroot}
 	the %prep, %build, and %install stages).
 
 ## install rpm
+
 > rpm -ivh 
