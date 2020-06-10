@@ -16,6 +16,8 @@ mv data_center/default-* /data_center_bak/
 ## command tool [-num 20 ]to sync file number can choose,use to replace kubectl on data mve and create new pv
 pvsync [create/apply] -num 20 -f file.yaml
 
+if your backup pv is very big, please wait and no broke it.
+
 # make rpm package step
 ## install tool
 > yum  install  -y  rpm-build
