@@ -20,7 +20,7 @@ if your backup pv is very big, please wait and no broke it.
 
 # make rpm package step
 ## install tool
-> yum  install  -y  rpm-build
+> yum  install  -y  rpm-build rpmdevtools
 ## need normal user
 > useradd  hunge
 
