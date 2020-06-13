@@ -84,6 +84,18 @@ rm -rf /etc/pvsync/pvctl.conf
 
 > cd ../ #  rpm package in fold RPMS and source in SRPMS
 
+```
+rpmbuild -ba pvsync.spec
+tell file not found
+cp pvsync-1.0.0.tar.gz rpmbuild/SOURCES/
+[hunge@master ~]$ cp pvsync.spec rpmbuild/SPECS/
+
+try again
+[hunge@master ~]$ rpmbuild -ba pvsync.spec
+
+```
+
+
 -ba: Build binary and source packages (after doing
 	the %prep, %build, and %install stages).
 
