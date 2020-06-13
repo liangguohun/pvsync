@@ -43,7 +43,7 @@ PV_NUM=$(expr $PV_NUM + 1)
 tar_dirs=$(ls $NFS_SRC -lt | head -n $PV_NUM | tail -n $(expr $PV_NUM - 1) | awk '{print $9}')
 for i in $tar_dirs
 do
-  if [ $(expr ${#i} - 37)>0 ]; then
+  if [ $(expr ${#i} - 37) -gt 0 ]; then
   cpfilesAndDel ${i:0:$(expr ${#i} - 37)} $i
   fi
 done
@@ -74,6 +74,7 @@ if [ $PV_CMD == "init" ]; then
 else 
  mngClaim $*   # $@
  kubectl $PV_CMD -f $PV_CLAIM
+ sleep 2
  getConfig
  transFiles
 fi
